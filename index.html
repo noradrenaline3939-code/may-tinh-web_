@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Simple Calculator</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" type="image/png" href="favicon.png" />
+</head>
+<body>
+  <main class="calculator" role="application" aria-label="Scientific calculator">
+    <div class="topbar">
+      <div class="badges">
+        <span id="badgeAngle" class="badge">DEG</span>
+        <span id="badgeShift" class="badge hidden">2ND</span>
+        <span id="badgeMem" class="badge hidden">M</span>
+      </div>
+      <button id="sciToggle" class="mode-toggle" type="button" aria-pressed="false">Khoa học</button>
+    </div>
+
+    <input id="display" class="display" type="text" readonly aria-live="polite" />
+
+    <div id="sciPanel" class="sci-buttons" role="group" aria-label="Scientific functions">
+      <button data-action="shift" class="btn sci-btn function" id="shiftBtn">Shift</button>
+      <button data-action="angle" class="btn sci-btn function" id="angleBtn">DEG</button>
+      <button data-action="mc" class="btn sci-btn function">MC</button>
+      <button data-action="mr" class="btn sci-btn function">MR</button>
+      <button data-action="mplus" class="btn sci-btn function">M+</button>
+      <button data-action="mminus" class="btn sci-btn function">M−</button>
+      <button data-action="ans" class="btn sci-btn function">Ans</button>
+      <button data-insert="*10^(" class="btn sci-btn function">EXP</button>
+
+      <button data-insert="sin(" data-shift-insert="asin(" data-label="sin" data-shift-label="sin⁻¹" class="btn sci-btn trig">sin</button>
+      <button data-insert="cos(" data-shift-insert="acos(" data-label="cos" data-shift-label="cos⁻¹" class="btn sci-btn trig">cos</button>
+      <button data-insert="tan(" data-shift-insert="atan(" data-label="tan" data-shift-label="tan⁻¹" class="btn sci-btn trig">tan</button>
+      <button data-insert="log(" data-shift-insert="10^(" data-label="log" data-shift-label="10ˣ" class="btn sci-btn trig">log</button>
+      <button data-insert="ln(" data-shift-insert="e^(" data-label="ln" data-shift-label="eˣ" class="btn sci-btn trig">ln</button>
+      <button data-insert="sqrt(" class="btn sci-btn trig">√</button>
+      <button data-insert="^2" class="btn sci-btn trig">x²</button>
+      <button data-insert="^3" class="btn sci-btn trig">x³</button>
+
+      <button data-insert="^" class="btn sci-btn trig">xʸ</button>
+      <button data-insert="π" class="btn sci-btn trig">π</button>
+      <button data-insert="e" class="btn sci-btn trig">e</button>
+      <button data-insert="%" class="btn sci-btn trig">%</button>
+      <button data-insert="!" class="btn sci-btn trig">x!</button>
+      <button data-action="reciprocal" class="btn sci-btn trig">1/x</button>
+      <button data-insert="abs(" class="btn sci-btn trig">|x|</button>
+      <button data-insert="cbrt(" class="btn sci-btn trig">³√</button>
+    </div>
+
+    <div class="buttons" role="group" aria-label="Calculator buttons">
+      <button data-action="clear" class="btn function">C</button>
+      <button data-action="back" class="btn function">⌫</button>
+      <button data-value="(" class="btn function">(</button>
+      <button data-value=")" class="btn function">)</button>
+
+      <button data-value="7" class="btn">7</button>
+      <button data-value="8" class="btn">8</button>
+      <button data-value="9" class="btn">9</button>
+      <button data-value="÷" class="btn operator">÷</button>
+
+      <button data-value="4" class="btn">4</button>
+      <button data-value="5" class="btn">5</button>
+      <button data-value="6" class="btn">6</button>
+      <button data-value="×" class="btn operator">×</button>
+
+      <button data-value="1" class="btn">1</button>
+      <button data-value="2" class="btn">2</button>
+      <button data-value="3" class="btn">3</button>
+      <button data-value="-" class="btn operator">−</button>
+
+      <button data-action="toggle-sign" class="btn function">±</button>
+      <button data-value="0" class="btn">0</button>
+      <button data-value="." class="btn">.</button>
+      <button data-value="+" class="btn operator">+</button>
+
+      <button data-action="equals" class="btn equals" style="grid-column: 1 / -1">=</button>
+    </div>
+    <p class="hint">You can also use your keyboard (numbers, +-*/ Enter, Backspace, Esc).</p>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
