@@ -10,78 +10,95 @@
   <meta name="google-site-verification" content="M6YVifcPRESmN6mI3KLKEQlS5uCnSSgyQyt8UlJSpiA" />
 </head>
 <body>
-  <main class="calculator" role="application" aria-label="Scientific calculator">
-    <div class="topbar">
-      <div class="badges">
+  <main class="calc-shell" role="application" aria-label="Scientific calculator">
+
+    <div class="brand-plate">
+      <span class="brand">NOVA <span class="brand-thin">calc</span></span>
+      <span class="brand-sub">Scientific Calculator&nbsp;&middot;&nbsp;NX-100</span>
+    </div>
+    
+    <div class="screen">
+      <div class="screen-status">
         <span id="badgeAngle" class="badge">DEG</span>
         <span id="badgeShift" class="badge hidden">2ND</span>
         <span id="badgeMem" class="badge hidden">M</span>
       </div>
-      <button id="sciToggle" class="mode-toggle" type="button" aria-pressed="false">Khoa học</button>
+      <div id="display" class="screen-main" tabindex="0" aria-line="polite">o</div>
+    </div>
+     <div class="control-row">
+      <div class="control-cluster">
+        <button id="shiftBtn" data-action="shift" class="ctrl-btn">SHIFT</button>
+        <button id="angleBtn" data-action="angle" class="ctrl-btn">DEG</button>
+      </div>
+
+        <div class="dpad" role="group" aria-label="Cursor and quick actions">
+        <button class="dpad-btn dpad-up" data-dir="up" title="Ans">▲</button>
+        <button class="dpad-btn dpad-left" data-dir="left" title="Move left">◀</button>
+        <button class="dpad-btn dpad-center" data-action="equals" title="Equals">OK</button>
+        <button class="dpad-btn dpad-right" data-dir="right" title="Move right">▶</button>
+        <button class="dpad-btn dpad-down" data-dir="down" title="Memory recall">▼</button>
+      </div>
+
+      <div class="control-cluster">
+        <button data-action="back" class="ctrl-btn del">DEL</button>
+        <button data-action="clear" class="ctrl-btn ac">AC</button>
+      </div>
     </div>
 
-    <input id="display" class="display" type="text" readonly aria-live="polite" />
+    <div class="keypad">
+      <button class="key" data-action="reciprocal"><span class="key-sub">&nbsp;</span><span class="key-main">1/x</span></button>
+      <button class="key" data-insert="^2"><span class="key-sub">&nbsp;</span><span class="key-main">x²</span></button>
+      <button class="key" data-insert="^3"><span class="key-sub">&nbsp;</span><span class="key-main">x³</span></button>
+      <button class="key" data-insert="^"><span class="key-sub">&nbsp;</span><span class="key-main">xʸ</span></button>
+      <button class="key" data-insert="sqrt(" data-shift-insert="cbrt(" data-label="√" data-shift-label="³√"><span class="key-sub">³√</span><span class="key-main">√</span></button>
 
-    <div id="sciPanel" class="sci-buttons" role="group" aria-label="Scientific functions">
-      <button data-action="shift" class="btn sci-btn function" id="shiftBtn">Shift</button>
-      <button data-action="angle" class="btn sci-btn function" id="angleBtn">DEG</button>
-      <button data-action="mc" class="btn sci-btn function">MC</button>
-      <button data-action="mr" class="btn sci-btn function">MR</button>
-      <button data-action="mplus" class="btn sci-btn function">M+</button>
-      <button data-action="mminus" class="btn sci-btn function">M−</button>
-      <button data-action="ans" class="btn sci-btn function">Ans</button>
-      <button data-insert="*10^(" class="btn sci-btn function">EXP</button>
+      <button class="key" data-insert="log(" data-shift-insert="10^(" data-label="log" data-shift-label="10ˣ"><span class="key-sub">10ˣ</span><span class="key-main">log</span></button>
+      <button class="key" data-insert="ln(" data-shift-insert="e^(" data-label="ln" data-shift-label="eˣ"><span class="key-sub">eˣ</span><span class="key-main">ln</span></button>
+      <button class="key" data-insert="sin(" data-shift-insert="asin(" data-label="sin" data-shift-label="sin⁻¹"><span class="key-sub">sin⁻¹</span><span class="key-main">sin</span></button>
+      <button class="key" data-insert="cos(" data-shift-insert="acos(" data-label="cos" data-shift-label="cos⁻¹"><span class="key-sub">cos⁻¹</span><span class="key-main">cos</span></button>
+      <button class="key" data-insert="tan(" data-shift-insert="atan(" data-label="tan" data-shift-label="tan⁻¹"><span class="key-sub">tan⁻¹</span><span class="key-main">tan</span></button>
 
-      <button data-insert="sin(" data-shift-insert="asin(" data-label="sin" data-shift-label="sin⁻¹" class="btn sci-btn trig">sin</button>
-      <button data-insert="cos(" data-shift-insert="acos(" data-label="cos" data-shift-label="cos⁻¹" class="btn sci-btn trig">cos</button>
-      <button data-insert="tan(" data-shift-insert="atan(" data-label="tan" data-shift-label="tan⁻¹" class="btn sci-btn trig">tan</button>
-      <button data-insert="log(" data-shift-insert="10^(" data-label="log" data-shift-label="10ˣ" class="btn sci-btn trig">log</button>
-      <button data-insert="ln(" data-shift-insert="e^(" data-label="ln" data-shift-label="eˣ" class="btn sci-btn trig">ln</button>
-      <button data-insert="sqrt(" class="btn sci-btn trig">√</button>
-      <button data-insert="^2" class="btn sci-btn trig">x²</button>
-      <button data-insert="^3" class="btn sci-btn trig">x³</button>
+      <button class="key" data-insert="("><span class="key-sub">&nbsp;</span><span class="key-main">(</span></button>
+      <button class="key" data-insert=")"><span class="key-sub">&nbsp;</span><span class="key-main">)</span></button>
+      <button class="key" data-insert="π"><span class="key-sub">&nbsp;</span><span class="key-main">π</span></button>
+      <button class="key" data-insert="e"><span class="key-sub">&nbsp;</span><span class="key-main">e</span></button>
+      <button class="key" data-insert="%"><span class="key-sub">&nbsp;</span><span class="key-main">%</span></button>
 
-      <button data-insert="^" class="btn sci-btn trig">xʸ</button>
-      <button data-insert="π" class="btn sci-btn trig">π</button>
-      <button data-insert="e" class="btn sci-btn trig">e</button>
-      <button data-insert="%" class="btn sci-btn trig">%</button>
-      <button data-insert="!" class="btn sci-btn trig">x!</button>
-      <button data-action="reciprocal" class="btn sci-btn trig">1/x</button>
-      <button data-insert="abs(" class="btn sci-btn trig">|x|</button>
-      <button data-insert="cbrt(" class="btn sci-btn trig">³√</button>
+      <button class="key" data-action="mc"><span class="key-sub">&nbsp;</span><span class="key-main">MC</span></button>
+      <button class="key" data-action="mr"><span class="key-sub">&nbsp;</span><span class="key-main">MR</span></button>
+      <button class="key" data-action="mplus"><span class="key-sub">&nbsp;</span><span class="key-main">M+</span></button>
+      <button class="key" data-action="mminus"><span class="key-sub">&nbsp;</span><span class="key-main">M−</span></button>
+      <button class="key" data-insert="!"><span class="key-sub">&nbsp;</span><span class="key-main">x!</span></button>
+
+      <button class="key num" data-value="7"><span class="key-main">7</span></button>
+      <button class="key num" data-value="8"><span class="key-main">8</span></button>
+      <button class="key num" data-value="9"><span class="key-main">9</span></button>
+      <button class="key op" data-value="×"><span class="key-main">×</span></button>
+      <button class="key op" data-value="÷"><span class="key-main">÷</span></button>
+
+      <button class="key num" data-value="4"><span class="key-main">4</span></button>
+      <button class="key num" data-value="5"><span class="key-main">5</span></button>
+      <button class="key num" data-value="6"><span class="key-main">6</span></button>
+      <button class="key op" data-value="-"><span class="key-main">−</span></button>
+      <button class="key op" data-value="+"><span class="key-main">+</span></button>
+
+      <button class="key num" data-value="1"><span class="key-main">1</span></button>
+      <button class="key num" data-value="2"><span class="key-main">2</span></button>
+      <button class="key num" data-value="3"><span class="key-main">3</span></button>
+      <button class="key" data-action="toggle-sign"><span class="key-main">±</span></button>
+      <button class="key" data-insert="*10^("><span class="key-main">EXP</span></button>
+
+      <button class="key num wide" data-value="0"><span class="key-main">0</span></button>
+      <button class="key num" data-value="."><span class="key-main">.</span></button>
+      <button class="key" data-action="ans"><span class="key-main">Ans</span></button>
+      <button class="key equals" data-action="equals"><span class="key-main">=</span></button>
     </div>
 
-    <div class="buttons" role="group" aria-label="Calculator buttons">
-      <button data-action="clear" class="btn function">C</button>
-      <button data-action="back" class="btn function">⌫</button>
-      <button data-value="(" class="btn function">(</button>
-      <button data-value=")" class="btn function">)</button>
-
-      <button data-value="7" class="btn">7</button>
-      <button data-value="8" class="btn">8</button>
-      <button data-value="9" class="btn">9</button>
-      <button data-value="÷" class="btn operator">÷</button>
-
-      <button data-value="4" class="btn">4</button>
-      <button data-value="5" class="btn">5</button>
-      <button data-value="6" class="btn">6</button>
-      <button data-value="×" class="btn operator">×</button>
-
-      <button data-value="1" class="btn">1</button>
-      <button data-value="2" class="btn">2</button>
-      <button data-value="3" class="btn">3</button>
-      <button data-value="-" class="btn operator">−</button>
-
-      <button data-action="toggle-sign" class="btn function">±</button>
-      <button data-value="0" class="btn">0</button>
-      <button data-value="." class="btn">.</button>
-      <button data-value="+" class="btn operator">+</button>
-
-      <button data-action="equals" class="btn equals" style="grid-column: 1 / -1">=</button>
-    </div>
-    <p class="hint">You can also use your keyboard (numbers, +-*/ Enter, Backspace, Esc).</p>
+    <p class="hint">Keyboard: numbers, +-*/, Enter, Backspace, arrow keys, Esc.</p>
   </main>
 
   <script src="script.js"></script>
 </body>
 </html>
+
+      
