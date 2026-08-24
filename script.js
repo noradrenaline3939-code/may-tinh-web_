@@ -34,38 +34,59 @@
     return r;
   }
 
-  // ---------- display ----------
-  function updateDisplay() {
-    display.value = expr || '0';
+  // ---------- display / caret ----------
+  function escapeHtml(s) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 
-  function append(value) {
-    expr += value;
-    updateDisplay();
+  function renderDisplay() {
+    if (!expr) {
+      display.innerHTML = '<span class="caret"></span>0';
+      return;
+    }
+    const before = escapeHtml(expr.slice(0, cursorPos));
+    const after = escapeHtml(expr.slice(cursorPos));
+    display.innerHTML = before + '<span class="caret"></span>' + after;
+  }
+
+  function insertAtCursor(text) {
+    expr = expr.slice(0, cursorPos) + text + expr.slice(cursorPos);
+    cursorPos += text.length;
+    renderDisplay();
   }
 
   function clearAll() {
     expr = '';
-    updateDisplay();
+    cursorPos = 0;
+    renderDisplay();
   }
 
   function backspace() {
-    expr = expr.slice(0, -1);
-    updateDisplay();
+    if (cursorPos === 0) return;
+    expr = expr.slice(0, cursorPos - 1) + expr.slice(cursorPos);
+    cursorPos -= 1;
+    renderDisplay();
   }
 
-  // Toggle sign of the last number in the expression
+  function moveCursor(dir) {
+    if (dir === 'left') cursorPos = Math.max(0, cursorPos - 1);
+    if (dir === 'right') cursorPos = Math.min(expr.length, cursorPos + 1);
+    renderDisplay();
+  }
+
+  // Toggle sign of the last number before the caret
   function toggleSign() {
-    const m = expr.match(/(-?\d+\.?\d*)$/);
+    const head = expr.slice(0, cursorPos);
+    const m = head.match(/(-?\d+\.?\d*)$/);
     if (!m) return;
     const num = m[1];
     const start = m.index;
-    if (num.startsWith('-')) {
-      expr = expr.slice(0, start) + num.slice(1);
-    } else {
-      expr = expr.slice(0, start) + '-' + num;
-    }
-    updateDisplay();
+    let newHead;
+    if (num.startsWith('-')) newHead = head.slice(0, start) + num.slice(1);
+    else newHead = head.slice(0, start) + '-' + num;
+    expr = newHead + expr.slice(cursorPos);
+    cursorPos = newHead.length;
+    renderDisplay();
   }
 
   function reciprocal() {
@@ -83,7 +104,6 @@
       .replace(/π/g, '(Math.PI)')
       .replace(/\be\b/g, '(Math.E)');
 
-    // function tokens, longest / most specific first
     p = p
       .replace(/asin\(/g, 'asinD(')
       .replace(/acos\(/g, 'acosD(')
@@ -97,20 +117,16 @@
       .replace(/cbrt\(/g, 'Math.cbrt(')
       .replace(/abs\(/g, 'Math.abs(');
 
-    // percent -> divide by 100
     p = p.replace(/%/g, '/100');
 
-    // factorial: turn "N!" or "(...)!" into factorial(N)
     let guard = 0;
     while (/(\d+(\.\d+)?|\))!/.test(p) && guard < 25) {
       p = p.replace(/(\d+(\.\d+)?|\))!/, 'factorial($1)');
       guard++;
     }
 
-    // power operator
     p = p.replace(/\^/g, '**');
 
-    // auto-balance any missing closing parentheses
     const opens = (p.match(/\(/g) || []).length;
     const closes = (p.match(/\)/g) || []).length;
     if (opens > closes) p += ')'.repeat(opens - closes);
@@ -127,6 +143,10 @@
     return fn({ sinD, cosD, tanD, asinD, acosD, atanD, factorial });
   }
 
+  function round(n) {
+    return Math.round((n + Number.EPSILON) * 1e10) / 1e10;
+  }
+
   function calculate() {
     if (!expr) return;
     try {
@@ -134,24 +154,27 @@
       if (!Number.isFinite(result)) throw new Error('Invalid result');
       lastAnswer = result;
       expr = String(round(result));
-      updateDisplay();
+      cursorPos = expr.length;
+      renderDisplay();
     } catch (e) {
-      display.value = 'Error';
+      display.innerHTML = 'Error';
       expr = '';
-      setTimeout(updateDisplay, 800);
+      cursorPos = 0;
+      setTimeout(renderDisplay, 800);
     }
-  }
-
-  function round(n) {
-    // avoid ugly floating point noise, keep up to 10 significant digits
-    return Math.round((n + Number.EPSILON) * 1e10) / 1e10;
   }
 
   // ---------- shift / angle mode ----------
   function updateShiftLabels() {
     document.querySelectorAll('[data-shift-insert]').forEach((btn) => {
-      const label = shiftOn ? btn.dataset.shiftLabel : btn.dataset.label;
-      btn.textContent = label;
+      const sub = btn.querySelector('.key-sub');
+      const main = btn.querySelector('.key-main');
+      if (shiftOn) {
+        main.textContent = btn.dataset.shiftLabel || btn.dataset.label;
+      } else {
+        main.textContent = btn.dataset.label;
+      }
+      if (sub) sub.textContent = shiftOn ? btn.dataset.label : (btn.dataset.shiftLabel || '\u00A0');
     });
     shiftBtn.classList.toggle('active', shiftOn);
     badgeShift.classList.toggle('hidden', !shiftOn);
@@ -184,17 +207,26 @@
   }
 
   function memClear() { memory = 0; updateMemBadge(); }
-  function memRecall() { append(String(round(memory))); }
+  function memRecall() { insertAtCursor(String(round(memory))); }
   function memPlus() { memory = round(memory + currentValue()); updateMemBadge(); }
   function memMinus() { memory = round(memory - currentValue()); updateMemBadge(); }
+  function ansRecall() { insertAtCursor(String(round(lastAnswer))); }
 
   // ---------- wiring buttons ----------
-  document.querySelectorAll('.btn').forEach((btn) => {
+  document.querySelectorAll('[data-value], [data-action], [data-insert], [data-dir]').forEach((btn) => {
     btn.addEventListener('click', () => {
       const v = btn.dataset.value;
       const action = btn.dataset.action;
       const insert = btn.dataset.insert;
       const shiftInsert = btn.dataset.shiftInsert;
+      const dir = btn.dataset.dir;
+
+      if (dir) {
+        if (dir === 'left' || dir === 'right') moveCursor(dir);
+        else if (dir === 'up') ansRecall();
+        else if (dir === 'down') memRecall();
+        return;
+      }
 
       if (action) {
         switch (action) {
@@ -209,36 +241,32 @@
           case 'mr': memRecall(); break;
           case 'mplus': memPlus(); break;
           case 'mminus': memMinus(); break;
-          case 'ans': append(String(round(lastAnswer))); break;
+          case 'ans': ansRecall(); break;
         }
         return;
       }
 
-      if (shiftInsert && shiftOn) {
-        append(shiftInsert);
-        return;
-      }
-      if (insert) { append(insert); return; }
-      if (v) append(v);
+      if (shiftInsert && shiftOn) { insertAtCursor(shiftInsert); return; }
+      if (insert) { insertAtCursor(insert); return; }
+      if (v) insertAtCursor(v);
     });
-  });
-
-  sciToggle.addEventListener('click', () => {
-    const isOpen = sciPanel.classList.toggle('open');
-    sciToggle.setAttribute('aria-pressed', String(isOpen));
   });
 
   // ---------- keyboard support ----------
   window.addEventListener('keydown', (e) => {
     const key = e.key;
-    if (/^[0-9]$/.test(key)) { append(key); e.preventDefault(); return; }
-    if (key === '.') { append('.'); e.preventDefault(); return; }
-    if (key === '+' || key === '-' || key === '*' || key === '/') { append(key); e.preventDefault(); return; }
-    if (key === '^') { append('^'); e.preventDefault(); return; }
+    if (/^[0-9]$/.test(key)) { insertAtCursor(key); e.preventDefault(); return; }
+    if (key === '.') { insertAtCursor('.'); e.preventDefault(); return; }
+    if (key === '+' || key === '-' || key === '*' || key === '/') { insertAtCursor(key); e.preventDefault(); return; }
+    if (key === '^') { insertAtCursor('^'); e.preventDefault(); return; }
     if (key === 'Enter' || key === '=') { calculate(); e.preventDefault(); return; }
     if (key === 'Backspace') { backspace(); e.preventDefault(); return; }
     if (key === 'Escape') { clearAll(); e.preventDefault(); return; }
-    if (key === '(' || key === ')') { append(key); e.preventDefault(); return; }
+    if (key === '(' || key === ')') { insertAtCursor(key); e.preventDefault(); return; }
+    if (key === 'ArrowLeft') { moveCursor('left'); e.preventDefault(); return; }
+    if (key === 'ArrowRight') { moveCursor('right'); e.preventDefault(); return; }
+    if (key === 'ArrowUp') { ansRecall(); e.preventDefault(); return; }
+    if (key === 'ArrowDown') { memRecall(); e.preventDefault(); return; }
   });
 
   // ---------- initialize ----------
